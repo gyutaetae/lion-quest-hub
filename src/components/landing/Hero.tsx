@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { QrCode, Trophy, Zap } from "lucide-react";
 import lionLogo from "@/assets/likelion-logo.jpeg";
@@ -62,10 +63,12 @@ const Hero = () => {
           >
             <div className="relative">
               <div className="w-64 h-64 md:w-80 md:h-80 rounded-3xl overflow-hidden lion-shadow-hover border-2 border-white/50">
-                <img
+                <Image
                   src={lionLogo}
                   alt="멋쟁이사자처럼 경상국립대 로고"
                   className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 256px, 320px"
                 />
               </div>
 

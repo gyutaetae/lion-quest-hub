@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_events: {
+        Row: {
+          activity_type_id: string
+          awarded_by: string | null
+          created_at: string
+          description: string | null
+          id: string
+          reference_key: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_type_id: string
+          awarded_by?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_key?: string | null
+          user_id: string
+        }
+        Update: {
+          activity_type_id?: string
+          awarded_by?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          reference_key?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_activity_type_id_fkey"
+            columns: ["activity_type_id"]
+            isOneToOne: false
+            referencedRelation: "activity_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_types: {
+        Row: {
+          admin_only: boolean
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          points: number
+        }
+        Insert: {
+          admin_only?: boolean
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          points: number
+        }
+        Update: {
+          admin_only?: boolean
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          points?: number
+        }
+        Relationships: []
+      }
       attendance: {
         Row: {
           checked_in_at: string
@@ -96,6 +164,65 @@ export type Database = {
         }
         Relationships: []
       }
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          status: Database["public"]["Enums"]["friend_status"]
+          updated_at: string
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          status?: Database["public"]["Enums"]["friend_status"]
+          updated_at?: string
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          status?: Database["public"]["Enums"]["friend_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      guestbook_entries: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          profile_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          profile_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guestbook_entries_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       points_log: {
         Row: {
           created_at: string
@@ -129,33 +256,54 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string
+          favorite_stack: string | null
+          guestbook_open: boolean
           id: string
           level: number
           playlist_url: string | null
+          room_mood: string | null
+          room_theme: string | null
+          room_title: string | null
+          status_message: string | null
           total_points: number
           updated_at: string
+          username: string
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           display_name?: string
+          favorite_stack?: string | null
+          guestbook_open?: boolean
           id: string
           level?: number
           playlist_url?: string | null
+          room_mood?: string | null
+          room_theme?: string | null
+          room_title?: string | null
+          status_message?: string | null
           total_points?: number
           updated_at?: string
+          username?: string
         }
         Update: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           display_name?: string
+          favorite_stack?: string | null
+          guestbook_open?: boolean
           id?: string
           level?: number
           playlist_url?: string | null
+          room_mood?: string | null
+          room_theme?: string | null
+          room_title?: string | null
+          status_message?: string | null
           total_points?: number
           updated_at?: string
+          username?: string
         }
         Relationships: []
       }
@@ -191,6 +339,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      award_activity_points: {
+        Args: {
+          _activity_code: string
+          _description?: string
+          _reference_key?: string
+          _user_id: string
+        }
+        Returns: Json
+      }
       check_in_attendance: { Args: { _qr_code: string }; Returns: Json }
       has_role: {
         Args: {
@@ -202,6 +359,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "member"
+      friend_status: "pending" | "accepted" | "declined"
     }
     CompositeTypes: {
       [_ in never]: never

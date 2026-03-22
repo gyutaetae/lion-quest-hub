@@ -1,6 +1,9 @@
+"use client";
+
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
+import type { Tables } from "@/integrations/supabase/types";
 
 interface AuthContextType {
   user: User | null;
@@ -12,14 +15,10 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
 }
 
-interface Profile {
-  id: string;
-  display_name: string;
-  avatar_url: string | null;
-  bio: string;
-  playlist_url: string;
-  level: number;
-  total_points: number;
+type Profile = Tables<"profiles">;
+
+interface UserRole {
+  role: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .from("user_roles")
       .select("role")
       .eq("user_id", userId);
-    setIsAdmin(data?.some((r: any) => r.role === "admin") ?? false);
+    setIsAdmin((data as UserRole[] | null)?.some((role) => role.role === "admin") ?? false);
   };
 
   const refreshProfile = async () => {

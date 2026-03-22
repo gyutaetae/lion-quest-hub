@@ -5,12 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Scan, CheckCircle2, XCircle, Keyboard } from "lucide-react";
 import { Html5Qrcode } from "html5-qrcode";
+import { useToast } from "@/hooks/use-toast";
 
 interface Props {
   onSuccess: () => void;
 }
 
+interface CheckInResult {
+  success: boolean;
+  message: string;
+}
+
+const isCheckInResult = (value: unknown): value is CheckInResult => {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.success === "boolean" && typeof candidate.message === "string";
+};
+
 const QRScanner = ({ onSuccess }: Props) => {
+  const { toast } = useToast();
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
   const [scanning, setScanning] = useState(false);
   const [manualCode, setManualCode] = useState("");
@@ -18,17 +32,36 @@ const QRScanner = ({ onSuccess }: Props) => {
   const [processing, setProcessing] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
 
+  const extractCheckInCode = (rawValue: string) => {
+    const trimmed = rawValue.trim();
+    try {
+      const url = new URL(trimmed);
+      return url.searchParams.get("checkin") ?? trimmed;
+    } catch {
+      return trimmed;
+    }
+  };
+
   const checkIn = async (code: string) => {
     if (processing) return;
     setProcessing(true);
     try {
-      const { data, error } = await supabase.rpc("check_in_attendance", { _qr_code: code });
+      const resolvedCode = extractCheckInCode(code);
+      const { data, error } = await supabase.rpc("check_in_attendance", { _qr_code: resolvedCode });
       if (error) throw error;
-      const res = data as any;
+      if (!isCheckInResult(data)) {
+        throw new Error("출석 응답 형식이 올바르지 않습니다");
+      }
+      const res = data;
       setResult({ success: res.success, message: res.message });
       if (res.success) onSuccess();
-    } catch (err: any) {
-      setResult({ success: false, message: err.message || "오류가 발생했습니다" });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "오류가 발생했습니다";
+      setResult({ success: false, message });
+      toast({
+        title: "출석 처리 실패",
+        description: message,
+      });
     } finally {
       setProcessing(false);
       stopScanner();
@@ -59,7 +92,9 @@ const QRScanner = ({ onSuccess }: Props) => {
       try {
         await scannerRef.current.stop();
         scannerRef.current.clear();
-      } catch {}
+      } catch (error) {
+        console.error("Failed to stop QR scanner", error);
+      }
       scannerRef.current = null;
     }
     setScanning(false);
@@ -86,6 +121,9 @@ const QRScanner = ({ onSuccess }: Props) => {
         ) : (
           <>
             <div id="qr-reader" className="rounded-xl overflow-hidden" />
+            <p className="text-xs text-muted-foreground">
+              운영진이 띄운 QR 또는 출석 링크를 스캔하면 자동으로 출석 처리됩니다.
+            </p>
             {!scanning && !showManual && (
               <div className="flex gap-2">
                 <Button onClick={startScanner} className="flex-1 gap-1.5 active:scale-[0.97]">

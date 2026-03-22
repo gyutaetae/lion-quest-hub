@@ -1,3 +1,6 @@
+"use client";
+
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -71,7 +74,9 @@ const Leaderboard = () => {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm truncate">{entry.display_name || "이름 없음"}</div>
+                <Link href={`/room/${entry.id}`} className="font-medium text-sm truncate hover:underline">
+                  {entry.display_name || "이름 없음"}
+                </Link>
                 <div className="text-xs text-muted-foreground">
                   LV.{entry.level} {LEVEL_NAMES[entry.level]}
                 </div>
