@@ -93,7 +93,7 @@ const Hero = () => {
               >
                 <div className="flex items-center gap-2.5">
                   <div className="w-9 h-9 rounded-lg bg-amber-400 flex items-center justify-center">
-                    <Trophy className="w-4.5 h-4.5 text-white" />
+                    <Trophy className="w-4.5 h-4.5 text-primary-foreground" />
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">1위</p>
