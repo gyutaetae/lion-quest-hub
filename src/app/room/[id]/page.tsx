@@ -1,4 +1,4 @@
-import RoomView from "@/views/RoomView";
+import RoomView from "@/features/social/views/RoomView";
 
 export default async function RoomPage({
   params,
