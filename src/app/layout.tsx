@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_KR, Space_Grotesk } from "next/font/google";
-import "../index.css";
+import "../styles/globals.css";
 import { Providers } from "./providers";
 
 const notoSansKr = Noto_Sans_KR({
@@ -16,8 +16,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Lion Quest Hub",
-  description: "QR attendance, points, and leaderboard for LikeLion GNU.",
+  title: "My Lion App",
+  description: "싸이월드 감성의 성장 사자 미니홈피",
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${notoSansKr.variable} ${spaceGrotesk.variable}`}>
+      <body className={`${notoSansKr.variable} ${spaceGrotesk.variable} min-h-screen bg-background`}>
         <Providers>{children}</Providers>
       </body>
     </html>

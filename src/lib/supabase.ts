@@ -1,0 +1,1 @@
+export { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
