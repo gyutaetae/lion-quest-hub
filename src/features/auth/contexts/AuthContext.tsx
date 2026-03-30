@@ -30,13 +30,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
 
-  const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
+  const fetchProfile = async (userId: string, userMetadata?: any) => {
+    const { data, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", userId)
       .single();
-    if (data) setProfile(data as Profile);
+
+    if (data) {
+      setProfile(data as Profile);
+    } else if (error && error.code === "PGRST116" && userMetadata) {
+      // Profile not found, create it (PGRST116 is code for no rows returned)
+      const { data: newProfile } = await supabase
+        .from("profiles")
+        .insert({
+          id: userId,
+          display_name: userMetadata.full_name || userMetadata.name || "",
+          avatar_url: userMetadata.avatar_url || userMetadata.picture || "",
+        })
+        .select("*")
+        .single();
+      
+      if (newProfile) setProfile(newProfile as Profile);
+    }
   };
 
   const fetchRole = async (userId: string) => {
@@ -58,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
         if (session?.user) {
           setTimeout(() => {
-            fetchProfile(session.user.id);
+            fetchProfile(session.user.id, session.user.user_metadata);
             fetchRole(session.user.id);
           }, 0);
         } else {
@@ -73,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        fetchProfile(session.user.id, session.user.user_metadata);
         fetchRole(session.user.id);
       }
       setLoading(false);

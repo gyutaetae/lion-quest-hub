@@ -1,4 +1,4 @@
-// File: /Users/gyuteoi/Desktop/likelion/QR/src/app/dashboard/page.tsx
+// File: /Users/gyuteoi/qr/lion-quest-hub/src/app/dashboard/page.tsx
 import * as entry from '../../../../src/app/dashboard/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
