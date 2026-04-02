@@ -16,6 +16,12 @@ interface AuthContextType {
 }
 
 type Profile = Tables<"profiles">;
+type UserMetadata = {
+  full_name?: string;
+  name?: string;
+  avatar_url?: string;
+  picture?: string;
+};
 
 interface UserRole {
   role: string;
@@ -30,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
 
-  const fetchProfile = async (userId: string, userMetadata?: any) => {
+  const fetchProfile = async (userId: string, userMetadata?: UserMetadata) => {
     const { data, error } = await supabase
       .from("profiles")
       .select("*")

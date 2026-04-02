@@ -16,6 +16,7 @@ import Leaderboard from "@/features/dashboard/components/Leaderboard";
 import ProfileEditor from "@/features/dashboard/components/ProfileEditor";
 import PointManager from "@/features/dashboard/components/PointManager";
 import RecentPointFeed from "@/features/dashboard/components/RecentPointFeed";
+import AttendanceManager from "@/features/dashboard/components/AttendanceManager";
 import MiniHome from "@/features/social/components/MiniHome";
 
 const LEVEL_NAMES = ["", "응애사자", "아기사자", "코딩사자", "해커사자", "마스터사자"];
@@ -154,7 +155,10 @@ const DashboardView = () => {
             </TabsContent>
             {isAdmin && (
               <TabsContent value="admin-qr">
-                <QRGenerator />
+                <div className="grid gap-6 xl:grid-cols-2">
+                  <QRGenerator />
+                  <AttendanceManager />
+                </div>
               </TabsContent>
             )}
             {isAdmin && (

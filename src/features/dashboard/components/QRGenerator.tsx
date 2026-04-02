@@ -20,7 +20,8 @@ const QRGenerator = () => {
 
   const qrValue = useMemo(() => {
     if (!qrData || typeof window === "undefined") return "";
-    const url = new URL("/dashboard", window.location.origin);
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+    const url = new URL("/dashboard", baseUrl);
     url.searchParams.set("checkin", qrData.code);
     return url.toString();
   }, [qrData]);
